@@ -14,9 +14,13 @@ public class Storage {
     private Integer id;
     private UUID objectId;
 
-    public Storage(Integer id) {
+    public Storage() {
+        this.objectId = UUID.randomUUID();
+    }
+
+    public Storage(Integer id, UUID objectId) {
         this.id = id;
-        this.objectId = UUID.fromString(UUID.randomUUID().toString());
+        generateNumber(objectId);
     }
 
     public Integer getId() {
@@ -33,5 +37,11 @@ public class Storage {
 
     public void setObjectId(UUID objectId) {
         this.objectId = objectId;
+    }
+
+    private void generateNumber(UUID objectId) {
+        if (objectId == null) {
+            this.objectId = UUID.randomUUID();
+        }
     }
 }

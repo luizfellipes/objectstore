@@ -1,8 +1,10 @@
 package com.spring.objectstore.controller;
 
+
 import com.spring.objectstore.models.dto.StorageDTO;
 import com.spring.objectstore.models.entities.Storage;
 import com.spring.objectstore.service.StorageService;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +25,13 @@ public class UploadController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Storage> save(@RequestParam("id") Integer id, @RequestParam("file") MultipartFile file) throws Exception {
-        StorageDTO dto = new StorageDTO(id);
-        Storage storage = service.save(dto, file);
-        return ResponseEntity.status(HttpStatus.CREATED).body(storage);
+    public ResponseEntity<Storage> save(StorageDTO storageDTO,  @RequestParam("file") MultipartFile file) throws Exception {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(storageDTO, file));
+    }
+
+    @GetMapping("/archiveStorage/{objectId}")
+    public ResponseEntity<Object> getArchive(@PathVariable String objectId) throws Exception{
+        return ResponseEntity.status(HttpStatus.OK).body(service.getArchive(objectId));
     }
 
     @GetMapping
