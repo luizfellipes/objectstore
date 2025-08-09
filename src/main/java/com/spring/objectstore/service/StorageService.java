@@ -7,11 +7,14 @@ import com.spring.objectstore.repository.StorageRepository;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 
+import io.minio.RemoveObjectArgs;
+import jakarta.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 
@@ -57,6 +60,20 @@ public class StorageService {
     public Object getArchive(String objectId) throws Exception {
         var stream = minioClient.getObject(GetObjectArgs.builder().bucket("all").object(objectId).build());
         return IOUtils.toByteArray(stream);
+    }
+
+    public Storage findById(Integer id) {
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Id not found !"));
+    }
+
+    public void deleteById(Integer id) throws Exception {
+        minioClient.removeObject(
+                RemoveObjectArgs.builder()
+                        .bucket("all")
+                        .object(findById(id).getObjectId().toString())
+                        .build()
+        );
+        Optional.of(findById(id)).ifPresent(repository::delete);
     }
 
     private Storage convertDtoToModel(StorageDTO DTO) {
