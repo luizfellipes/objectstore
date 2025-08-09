@@ -8,7 +8,6 @@ import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 
 import io.minio.RemoveObjectArgs;
-import jakarta.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
