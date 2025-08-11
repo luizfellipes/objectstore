@@ -13,35 +13,30 @@ public class Storage {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
     private UUID objectId;
+    private String archiveName;
 
     public Storage() {
-        this.objectId = UUID.randomUUID();
     }
 
-    public Storage(Integer id, UUID objectId) {
+    public Storage(Integer id, UUID objectId, String archiveName) {
         this.id = id;
         generateNumber(objectId);
+        this.archiveName = archiveName;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public String getArchiveName() {
+        return archiveName;
     }
 
     public UUID getObjectId() {
         return objectId;
     }
 
-    public void setObjectId(UUID objectId) {
-        this.objectId = objectId;
-    }
-
     private void generateNumber(UUID objectId) {
-        if (objectId == null) {
-            this.objectId = UUID.randomUUID();
-        }
+        this.objectId = (objectId != null) ? objectId : UUID.randomUUID();
     }
 }

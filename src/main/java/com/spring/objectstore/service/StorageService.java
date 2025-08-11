@@ -7,6 +7,7 @@ import com.spring.objectstore.repository.StorageRepository;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 
+import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
@@ -29,17 +30,17 @@ public class StorageService {
     }
 
     public Storage save(StorageDTO storageDTO, MultipartFile file) {
-        return Stream.of(convertDtoToModel(storageDTO))
+        return Stream.of(convertDtoToModel(storageDTO, file))
                 .peek(storage -> {
                     if (file.isEmpty()) {
                         throw new IllegalArgumentException("File cannot be empty");
                     }
                     try {
                         minioClient.putObject(
-                                io.minio.PutObjectArgs.builder()
+                                PutObjectArgs.builder()
                                         .bucket("all")
                                         .object(storage.getObjectId().toString())
-                                        .stream(file.getInputStream(), file.getSize(), -1)
+                                        .stream(file.getInputStream(), file.getSize(), 0)
                                         .contentType(file.getContentType())
                                         .build()
                         );
@@ -56,7 +57,7 @@ public class StorageService {
         return repository.findAll();
     }
 
-    public Object getArchive(String objectId) throws Exception {
+    public byte[] getArchive(String objectId) throws Exception {
         var stream = minioClient.getObject(GetObjectArgs.builder().bucket("all").object(objectId).build());
         return IOUtils.toByteArray(stream);
     }
@@ -75,8 +76,8 @@ public class StorageService {
         Optional.of(findById(id)).ifPresent(repository::delete);
     }
 
-    private Storage convertDtoToModel(StorageDTO DTO) {
-        return new Storage(DTO.id(), DTO.objectId());
+    private Storage convertDtoToModel(StorageDTO DTO, MultipartFile file) {
+        return new Storage(DTO.id(), DTO.objectId(), file.getOriginalFilename());
     }
 }
 
