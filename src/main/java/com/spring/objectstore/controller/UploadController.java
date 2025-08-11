@@ -6,8 +6,7 @@ import com.spring.objectstore.models.entities.Storage;
 import com.spring.objectstore.service.StorageService;
 
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,8 +29,11 @@ public class UploadController {
     }
 
     @GetMapping("/archive/{objectId}")
-    public ResponseEntity<Object> getArchive(@PathVariable String objectId) throws Exception {
-        return ResponseEntity.status(HttpStatus.OK).body(service.getArchive(objectId));
+    public ResponseEntity<byte[]> getArchive(@PathVariable String objectId) throws Exception {
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline().filename(objectId).build().toString())
+                .body(service.getArchive(objectId));
     }
 
     @GetMapping
