@@ -4,15 +4,15 @@ package com.spring.objectstore.service;
 import com.spring.objectstore.models.dto.StorageDTO;
 import com.spring.objectstore.models.entities.Storage;
 import com.spring.objectstore.repository.StorageRepository;
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
+import io.minio.*;
 
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -39,7 +39,7 @@ public class StorageService {
                         minioClient.putObject(
                                 PutObjectArgs.builder()
                                         .bucket("all")
-                                        .object(storage.getObjectId().toString())
+                                        .object(storage.getArchiveName())
                                         .stream(file.getInputStream(), file.getSize(), 0)
                                         .contentType(file.getContentType())
                                         .build()
@@ -57,9 +57,11 @@ public class StorageService {
         return repository.findAll();
     }
 
-    public byte[] getArchive(String objectId) throws Exception {
-        var stream = minioClient.getObject(GetObjectArgs.builder().bucket("all").object(objectId).build());
-        return IOUtils.toByteArray(stream);
+    public byte[] getArchive(String archiveName) throws Exception {
+        return IOUtils.toByteArray(minioClient.getObject(GetObjectArgs.builder()
+                .bucket("all")
+                .object(archiveName)
+                .build()));
     }
 
     public Storage findById(Integer id) {
@@ -76,8 +78,12 @@ public class StorageService {
         Optional.of(findById(id)).ifPresent(repository::delete);
     }
 
+    private String dateTimer() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss "));
+    }
+
     private Storage convertDtoToModel(StorageDTO DTO, MultipartFile file) {
-        return new Storage(DTO.id(), DTO.objectId(), file.getOriginalFilename());
+        return new Storage(DTO.id(), DTO.objectId(), dateTimer() + file.getOriginalFilename());
     }
 }
 
