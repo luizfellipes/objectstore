@@ -1,6 +1,8 @@
 package com.spring.objectstore.service;
 
 
+import com.spring.objectstore.exceptions.StorageBadRequest;
+import com.spring.objectstore.exceptions.StorageNotFound;
 import com.spring.objectstore.models.dto.StorageDTO;
 import com.spring.objectstore.models.entities.Storage;
 import com.spring.objectstore.repository.StorageRepository;
@@ -33,7 +35,7 @@ public class StorageService {
         return Stream.of(convertDtoToModel(storageDTO, file))
                 .peek(storage -> {
                     if (file.isEmpty()) {
-                        throw new IllegalArgumentException("File cannot be empty");
+                        throw new StorageBadRequest("File cannot be empty");
                     }
                     try {
                         minioClient.putObject(
@@ -65,7 +67,7 @@ public class StorageService {
     }
 
     public Storage findById(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Id not found !"));
+        return repository.findById(id).orElseThrow(() -> new StorageNotFound("Id not found !"));
     }
 
     public void deleteById(Integer id) throws Exception {

@@ -25,7 +25,7 @@ public class UploadController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Storage> save(@Valid StorageDTO storageDTO, @RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseEntity<Storage> save(@Valid StorageDTO storageDTO, @RequestParam("file") MultipartFile file) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(storageDTO, file));
     }
 
