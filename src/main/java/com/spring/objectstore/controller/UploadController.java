@@ -6,6 +6,7 @@ import com.spring.objectstore.models.entities.Storage;
 import com.spring.objectstore.service.StorageService;
 
 
+import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,16 +25,16 @@ public class UploadController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Storage> save(StorageDTO storageDTO, @RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseEntity<Storage> save(@Valid StorageDTO storageDTO, @RequestParam("file") MultipartFile file) throws Exception {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(storageDTO, file));
     }
 
-    @GetMapping("/archive/{objectId}")
-    public ResponseEntity<byte[]> getArchive(@PathVariable String objectId) throws Exception {
+    @GetMapping("/archive/{archiveName}")
+    public ResponseEntity<byte[]> getArchive(@PathVariable String archiveName) throws Exception {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline().filename(objectId).build().toString())
-                .body(service.getArchive(objectId));
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline().filename(archiveName).build().toString())
+                .body(service.getArchive(archiveName));
     }
 
     @GetMapping
