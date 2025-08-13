@@ -9,4 +9,8 @@ public class StorageNotFound extends EntityNotFoundException {
     public StorageNotFound(String message) {
         super(message);
     }
+
+    public StorageNotFound(Exception message) {
+        super(message);
+    }
 }

@@ -34,9 +34,6 @@ public class StorageService {
     public Storage save(StorageDTO storageDTO, MultipartFile file) {
         return Stream.of(convertDtoToModel(storageDTO, file))
                 .peek(storage -> {
-                    if (file.isEmpty()) {
-                        throw new StorageBadRequest("File cannot be empty");
-                    }
                     try {
                         minioClient.putObject(
                                 PutObjectArgs.builder()
@@ -46,13 +43,13 @@ public class StorageService {
                                         .contentType(file.getContentType())
                                         .build()
                         );
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception message) {
+                        throw new StorageNotFound(message);
                     }
                 })
                 .map(repository::save)
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(()-> new StorageBadRequest("File is cannot empty !"));
     }
 
     public List<Storage> getAll() {

@@ -1,6 +1,7 @@
 package com.spring.objectstore.controller;
 
 
+import com.spring.objectstore.exceptions.StorageBadRequest;
 import com.spring.objectstore.models.dto.StorageDTO;
 import com.spring.objectstore.models.entities.Storage;
 import com.spring.objectstore.service.StorageService;
@@ -25,7 +26,7 @@ public class UploadController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Storage> save(@Valid StorageDTO storageDTO, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Storage> save(@Valid StorageDTO storageDTO, @Valid @RequestParam("file") MultipartFile file) throws StorageBadRequest {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(storageDTO, file));
     }
 
